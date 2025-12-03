@@ -56,13 +56,13 @@ if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && sup
 } else {
   console.warn('⚠️ Supabase credentials are not configured in the .env file.');
   console.warn('📝 Setup Instructions:');
-  console.warn('   1. Go to https://app.supabase.com');
-  console.warn('   2. Create/Select a project → Settings → API');
-  console.warn('   3. Copy Project URL and anon public key');
-  console.warn('   4. Create .env file in project root:');
-  console.warn('      VITE_SUPABASE_URL=https://your-project-id.supabase.co');
+  console.warn('   Your Project ID: tajcecinwsnxqzjldbvp');
+  console.warn('   1. Go to https://supabase.com/dashboard/project/tajcecinwsnxqzjldbvp/settings/api');
+  console.warn('   2. Copy anon public key');
+  console.warn('   3. Create/Update .env file in project root:');
+  console.warn('      VITE_SUPABASE_URL=https://tajcecinwsnxqzjldbvp.supabase.co');
   console.warn('      VITE_SUPABASE_ANON_KEY=your-anon-key-here');
-  console.warn('   5. Restart development server');
+  console.warn('   4. Restart development server');
   supabase = null;
   isSupabaseConnected = false;
 }

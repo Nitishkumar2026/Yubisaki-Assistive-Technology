@@ -29,9 +29,11 @@ Complete step-by-step guide to connect your Supabase project.
 1. In your project root, create a `.env` file (copy from `.env.example`):
 
 ```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_URL=https://tajcecinwsnxqzjldbvp.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
+
+**Your Project ID**: `tajcecinwsnxqzjldbvp`
 
 2. Replace `your-project-id` and `eyJhbG...` with your actual values from Step 1
 
