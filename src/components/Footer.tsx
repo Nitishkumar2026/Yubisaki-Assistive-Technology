@@ -18,21 +18,37 @@ const Footer: React.FC = () => {
     }
     setLoading(true);
 
-    const submissionPromise = subscribeNewsletter(email);
-
-    toast.promise(submissionPromise, {
-      loading: 'Subscribing...',
-      success: () => {
-        setLoading(false);
-        setEmail('');
-        return 'Successfully subscribed!';
-      },
-      error: (err) => {
-        setLoading(false);
-        console.error('Subscription error:', err.message);
-        return err.message || 'Subscription failed. Please try again.';
-      },
-    });
+    try {
+      const submissionPromise = subscribeNewsletter(email);
+      
+      toast.promise(submissionPromise, {
+        loading: 'Subscribing...',
+        success: () => {
+          setLoading(false);
+          setEmail('');
+          return 'Successfully subscribed!';
+        },
+        error: (err: any) => {
+          setLoading(false);
+          const errorMessage = err?.message || err?.toString() || 'Subscription failed. Please try again.';
+          // Check if it's a network error - if so, don't show toast
+          if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('Network error')) {
+            console.warn('Subscription network error:', errorMessage);
+            // Return empty string to prevent toast display
+            return '';
+          }
+          console.error('Subscription error:', errorMessage);
+          return errorMessage;
+        },
+      });
+    } catch (err: any) {
+      // Handle synchronous errors
+      setLoading(false);
+      const errorMessage = err?.message || err?.toString() || 'Subscription failed. Please try again.';
+      if (!errorMessage.includes('Failed to fetch') && !errorMessage.includes('NetworkError')) {
+        toast.error(errorMessage);
+      }
+    }
   };
 
   return (
@@ -44,7 +60,7 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <img
-                  src="/yat-logo.png"
+                  src="https://i.postimg.cc/y85vLgcm/logo.jpg"
                   alt="Yubisaki Assistive Technology (YAT) Logo"
                   className="w-14 h-14 object-contain rounded-full shadow-lg shadow-blue-500/10 bg-white"
                 />

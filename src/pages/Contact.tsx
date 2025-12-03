@@ -22,21 +22,37 @@ const Contact: React.FC = () => {
     }
     setLoading(true);
 
-    const submissionPromise = submitContact(formData);
-
-    toast.promise(submissionPromise, {
-      loading: 'Submitting your message...',
-      success: () => {
-        setLoading(false);
-        setFormData({ name: '', email: '', subject: '', message: '' });
-        return 'Message sent successfully!';
-      },
-      error: (err) => {
-        setLoading(false);
-        console.error('Submission error:', err.message);
-        return `Failed to send message: ${err.message}`;
-      },
-    });
+    try {
+      const submissionPromise = submitContact(formData);
+      
+      toast.promise(submissionPromise, {
+        loading: 'Submitting your message...',
+        success: () => {
+          setLoading(false);
+          setFormData({ name: '', email: '', subject: '', message: '' });
+          return 'Message sent successfully!';
+        },
+        error: (err: any) => {
+          setLoading(false);
+          const errorMessage = err?.message || err?.toString() || 'Failed to send message. Please try again.';
+          // Check if it's a network error - if so, don't show toast
+          if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('Network error')) {
+            console.warn('Contact form network error:', errorMessage);
+            // Return empty string to prevent toast display
+            return '';
+          }
+          console.error('Submission error:', errorMessage);
+          return `Failed to send message: ${errorMessage}`;
+        },
+      });
+    } catch (err: any) {
+      // Handle synchronous errors
+      setLoading(false);
+      const errorMessage = err?.message || err?.toString() || 'Failed to send message. Please try again.';
+      if (!errorMessage.includes('Failed to fetch') && !errorMessage.includes('NetworkError')) {
+        toast.error(errorMessage);
+      }
+    }
   };
 
   return (

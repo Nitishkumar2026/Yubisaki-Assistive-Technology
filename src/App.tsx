@@ -27,7 +27,15 @@ function App() {
     <Router>
       <AuthProvider>
         <div className="min-h-screen bg-white flex flex-col font-sans">
-          <Toaster position="top-center" reverseOrder={false} />
+          <Toaster 
+            position="top-center" 
+            reverseOrder={false}
+            toastOptions={{
+              error: {
+                duration: 4000,
+              }
+            }}
+          />
           <Navbar />
           <main className="flex-grow">
             <Routes>
