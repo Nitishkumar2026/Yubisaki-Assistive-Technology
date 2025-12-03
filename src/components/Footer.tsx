@@ -43,7 +43,11 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <img src="https://i.postimg.cc/6QvbzNWH/logo.png" alt="YAT Logo" className="w-14 h-14 rounded-full shadow-lg shadow-blue-500/10" />
+                <img
+                  src="/yat-logo.png"
+                  alt="Yubisaki Assistive Technology (YAT) Logo"
+                  className="w-14 h-14 object-contain rounded-full shadow-lg shadow-blue-500/10 bg-white"
+                />
                 <div className="absolute inset-0 rounded-full bg-blue-500 opacity-10 blur-sm"></div>
               </div>
               <div>

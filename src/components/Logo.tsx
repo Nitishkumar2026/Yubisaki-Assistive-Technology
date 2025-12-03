@@ -6,8 +6,8 @@ const Logo: React.FC<{ className?: string }> = ({ className = 'w-14 h-14' }) => 
     <Link to="/" className="flex items-center space-x-3 group transition-all duration-300">
       <div className="relative">
         <img 
-          src="https://i.postimg.cc/6QvbzNWH/logo.png" 
-          alt="Yubisaki Assistive Technology Logo" 
+          src="/yat-logo.png"
+          alt="Yubisaki Assistive Technology (YAT) Logo"
           className={`${className} object-contain rounded-full shadow-md transition-transform duration-300 group-hover:scale-105`}
         />
         <div className="absolute inset-0 rounded-full bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
