@@ -31,14 +31,8 @@ if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && sup
     // Validate URL format before creating client
     try {
       new URL(supabaseUrl);
-    } catch (urlError) {
-      console.error("Invalid Supabase URL format:", supabaseUrl);
-      supabase = null;
-      isSupabaseConnected = false;
-    }
-    
-    if (!supabase) {
-      // Only create client if URL validation passed
+      
+      // Create client if URL validation passed
       supabase = createClient(supabaseUrl, supabaseAnonKey, {
         auth: {
           persistSession: true,
@@ -47,16 +41,28 @@ if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && sup
         }
       });
       isSupabaseConnected = true;
-      console.log('Supabase client initialized successfully');
+      console.log('✅ Supabase client initialized successfully');
+      console.log('Supabase URL:', supabaseUrl);
+    } catch (urlError) {
+      console.error("❌ Invalid Supabase URL format:", supabaseUrl);
+      supabase = null;
+      isSupabaseConnected = false;
     }
   } catch (error) {
-    console.error("Error initializing Supabase client:", error);
+    console.error("❌ Error initializing Supabase client:", error);
     supabase = null;
     isSupabaseConnected = false;
   }
 } else {
-  console.warn('Supabase credentials are not configured in the .env file. Forms will be disabled.');
-  console.warn('Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file');
+  console.warn('⚠️ Supabase credentials are not configured in the .env file.');
+  console.warn('📝 Setup Instructions:');
+  console.warn('   1. Go to https://app.supabase.com');
+  console.warn('   2. Create/Select a project → Settings → API');
+  console.warn('   3. Copy Project URL and anon public key');
+  console.warn('   4. Create .env file in project root:');
+  console.warn('      VITE_SUPABASE_URL=https://your-project-id.supabase.co');
+  console.warn('      VITE_SUPABASE_ANON_KEY=your-anon-key-here');
+  console.warn('   5. Restart development server');
   supabase = null;
   isSupabaseConnected = false;
 }
