@@ -14,25 +14,25 @@ const About: React.FC = () => {
 
   const leadership = [
     {
-      name: 'Rajesh Kumar',
+      name: 'Nitish Kumar',
       position: 'Chief Executive Officer',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
       linkedin: '#'
     },
     {
-      name: 'Priya Sharma',
+      name: 'Himanshu Kumar',
       position: 'Chief Technology Officer',
       image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop',
       linkedin: '#'
     },
     {
-      name: 'Amit Patel',
+      name: 'Harsh Gupta',
       position: 'Chief Innovation Officer',
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop',
       linkedin: '#'
     },
     {
-      name: 'Sunita Gupta',
+      name: 'Jyoti Mishra',
       position: 'Chief Operations Officer',
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop',
       linkedin: '#'

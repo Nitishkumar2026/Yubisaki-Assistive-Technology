@@ -118,11 +118,11 @@ const Contact: React.FC = () => {
                   </div>
                   <div className="flex items-center space-x-4">
                     <Phone size={20} className="text-blue-600" />
-                    <span>+1 (555) 123-4567</span>
+                    <span>+91-7814889581</span>
                   </div>
                   <div className="flex items-start space-x-4">
                     <MapPin size={20} className="text-blue-600 mt-1 flex-shrink-0" />
-                    <span>123 Tech Boulevard, Innovation District, Tech City, TC 12345</span>
+                    <span>5th Floor, IT Park<br /> Chandigarh</span>
                   </div>
                 </div>
               </div>
