@@ -28,15 +28,27 @@ export const getAdminClient = () => {
 // Initialize Supabase client with better error handling
 if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY') {
   try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    });
-    isSupabaseConnected = true;
-    console.log('Supabase client initialized successfully');
+    // Validate URL format before creating client
+    try {
+      new URL(supabaseUrl);
+    } catch (urlError) {
+      console.error("Invalid Supabase URL format:", supabaseUrl);
+      supabase = null;
+      isSupabaseConnected = false;
+    }
+    
+    if (!supabase) {
+      // Only create client if URL validation passed
+      supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+      isSupabaseConnected = true;
+      console.log('Supabase client initialized successfully');
+    }
   } catch (error) {
     console.error("Error initializing Supabase client:", error);
     supabase = null;
@@ -45,6 +57,8 @@ if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && sup
 } else {
   console.warn('Supabase credentials are not configured in the .env file. Forms will be disabled.');
   console.warn('Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file');
+  supabase = null;
+  isSupabaseConnected = false;
 }
 
 export { supabase, isSupabaseConnected };

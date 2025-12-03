@@ -40,13 +40,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const getSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
-          console.error("Error getting session:", error);
+          // Silently handle errors - don't show toast notifications
+          console.warn("Error getting session:", error.message || 'Unknown error');
           setLoading(false);
           return;
         }
+        
         setSession(session);
         setUser(session?.user ?? null);
+        
         if (session?.user) {
           try {
             const { data: userProfile, error: profileError } = await supabase
@@ -57,16 +61,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (!profileError && userProfile) {
               setProfile(userProfile);
             }
-          } catch (profileErr) {
-            console.error("Error fetching user profile:", profileErr);
-            // Don't fail the whole auth flow if profile fetch fails
+          } catch (profileErr: any) {
+            // Silently handle profile fetch errors - don't show toasts
+            console.warn("Could not fetch user profile:", profileErr?.message || 'Unknown error');
           }
         }
       } catch (e: any) {
-        console.error("Error getting session:", e);
-        // Handle network errors gracefully
-        if (e.message?.includes('Failed to fetch') || e.message?.includes('NetworkError')) {
-          console.warn('Network error: Supabase may not be reachable. Check your connection and Supabase configuration.');
+        // Silently handle all network errors - don't show toast notifications
+        // Only log to console for debugging
+        const errorMessage = e?.message || e?.toString() || 'Unknown error';
+        if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('Network request failed')) {
+          console.warn('Supabase connection issue: Network may be unreachable or Supabase URL is incorrect.');
+        } else {
+          console.warn("Error getting session:", errorMessage);
         }
       } finally {
         setLoading(false);
@@ -90,24 +97,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 .eq('id', session.user.id)
                 .single();
               setProfile(userProfile);
-            } catch (profileErr) {
-              console.error("Error fetching user profile in auth listener:", profileErr);
+            } catch (profileErr: any) {
+              // Silently handle profile errors
+              console.warn("Could not fetch user profile in auth listener:", profileErr?.message || 'Unknown error');
             }
           } else {
             setProfile(null);
           }
-        } catch (err) {
-          console.error("Error in auth state change handler:", err);
+        } catch (err: any) {
+          // Silently handle errors - don't show toast notifications
+          console.warn("Error in auth state change handler:", err?.message || 'Unknown error');
         }
       });
       authListener = data;
-    } catch (err) {
-      console.error("Error setting up auth listener:", err);
+    } catch (err: any) {
+      // Silently handle listener setup errors
+      console.warn("Could not set up auth listener:", err?.message || 'Unknown error');
     }
 
     return () => {
       if (authListener) {
-        authListener.subscription.unsubscribe();
+        try {
+          authListener.subscription.unsubscribe();
+        } catch (e) {
+          // Ignore unsubscribe errors
+        }
       }
     };
   }, []);
