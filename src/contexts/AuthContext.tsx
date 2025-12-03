@@ -39,19 +39,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const getSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Error getting session:", error);
+          setLoading(false);
+          return;
+        }
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          const { data: userProfile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          setProfile(userProfile);
+          try {
+            const { data: userProfile, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+            if (!profileError && userProfile) {
+              setProfile(userProfile);
+            }
+          } catch (profileErr) {
+            console.error("Error fetching user profile:", profileErr);
+            // Don't fail the whole auth flow if profile fetch fails
+          }
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error("Error getting session:", e);
+        // Handle network errors gracefully
+        if (e.message?.includes('Failed to fetch') || e.message?.includes('NetworkError')) {
+          console.warn('Network error: Supabase may not be reachable. Check your connection and Supabase configuration.');
+        }
       } finally {
         setLoading(false);
       }
@@ -59,23 +75,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        const { data: userProfile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        setProfile(userProfile);
-      } else {
-        setProfile(null);
-      }
-    });
+    let authListener: { subscription: { unsubscribe: () => void } } | null = null;
+    
+    try {
+      const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        try {
+          setSession(session);
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            try {
+              const { data: userProfile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+              setProfile(userProfile);
+            } catch (profileErr) {
+              console.error("Error fetching user profile in auth listener:", profileErr);
+            }
+          } else {
+            setProfile(null);
+          }
+        } catch (err) {
+          console.error("Error in auth state change handler:", err);
+        }
+      });
+      authListener = data;
+    } catch (err) {
+      console.error("Error setting up auth listener:", err);
+    }
 
     return () => {
-      authListener.subscription.unsubscribe();
+      if (authListener) {
+        authListener.subscription.unsubscribe();
+      }
     };
   }, []);
 

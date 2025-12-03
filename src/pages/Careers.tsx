@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import { MapPin, Briefcase, Search, Loader2, PlusCircle, Edit, ShieldAlert, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabaseClient';
+import { supabase, isSupabaseConnected } from '../lib/supabaseClient';
 import PostJobModal from '../components/PostJobModal';
 import toast from 'react-hot-toast';
 
@@ -27,18 +27,35 @@ const Careers: React.FC = () => {
   const { profile, isAdmin } = useAuth();
 
   const fetchJobs = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('jobs')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching jobs:', error);
-    } else {
-      setJobListings(data as Job[]);
+    if (!isSupabaseConnected || !supabase) {
+      console.warn('Supabase is not connected. Cannot fetch jobs.');
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        toast.error('Failed to load job listings. Please try again later.');
+      } else {
+        setJobListings(data as Job[] || []);
+      }
+    } catch (err: any) {
+      console.error('Error fetching jobs:', err);
+      if (err.message?.includes('Failed to fetch')) {
+        toast.error('Network error: Unable to connect to the server. Please check your connection.');
+      } else {
+        toast.error('Failed to load job listings. Please try again later.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

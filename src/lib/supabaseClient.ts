@@ -25,17 +25,26 @@ export const getAdminClient = () => {
   return null;
 };
 
+// Initialize Supabase client with better error handling
 if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY') {
   try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
     isSupabaseConnected = true;
+    console.log('Supabase client initialized successfully');
   } catch (error) {
-    console.error("Error initializing Supabase client: Invalid URL provided.", error);
+    console.error("Error initializing Supabase client:", error);
     supabase = null;
     isSupabaseConnected = false;
   }
 } else {
   console.warn('Supabase credentials are not configured in the .env file. Forms will be disabled.');
+  console.warn('Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file');
 }
 
 export { supabase, isSupabaseConnected };
