@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { supabase } from '../lib/supabaseClient';
+import { supabase, isSupabaseConnected } from '../lib/supabaseClient';
 import { Mail, Key, User, Loader2, UserPlus } from 'lucide-react';
 import Logo from '../components/Logo';
 
@@ -15,6 +15,12 @@ const Signup: React.FC = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isSupabaseConnected || !supabase) {
+      toast.error('Registration is currently unavailable. Please check your configuration.');
+      return;
+    }
+    
     setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
@@ -30,7 +36,7 @@ const Signup: React.FC = () => {
       toast.success('Account created! Please check your email for verification.');
       navigate('/login');
     } catch (error: any) {
-      toast.error(error.error_description || error.message);
+      toast.error(error.error_description || error.message || 'Signup failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -93,7 +99,7 @@ const Signup: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading}
+              disabled={loading || !isSupabaseConnected}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
             >
               {loading ? <Loader2 className="animate-spin" /> : <UserPlus className="mr-2" />}
