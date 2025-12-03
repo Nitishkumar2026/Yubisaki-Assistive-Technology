@@ -16,8 +16,8 @@ const Signup: React.FC = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isSupabaseConnected || !supabase) {
-      toast.error('Registration is currently unavailable. Please check your configuration.');
+    if (!supabase) {
+      toast.error('Database connection is not available. Please check your configuration.');
       return;
     }
     
@@ -36,7 +36,14 @@ const Signup: React.FC = () => {
       toast.success('Account created! Please check your email for verification.');
       navigate('/login');
     } catch (error: any) {
-      toast.error(error.error_description || error.message || 'Signup failed. Please try again.');
+      const errorMessage = error?.error_description || error?.message || 'Signup failed. Please try again.';
+      // Silently handle network errors
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        console.warn('Signup network error:', errorMessage);
+        toast.error('Unable to connect to the server. Please check your internet connection.');
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -99,7 +106,7 @@ const Signup: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading || !isSupabaseConnected}
+              disabled={loading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
             >
               {loading ? <Loader2 className="animate-spin" /> : <UserPlus className="mr-2" />}

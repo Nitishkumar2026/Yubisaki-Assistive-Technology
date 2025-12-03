@@ -109,7 +109,7 @@ const Contact: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   className="w-full flex justify-center items-center bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  disabled={loading || !isSupabaseConnected}
+                  disabled={loading}
                 >
                   {loading ? <Loader2 className="animate-spin mr-2" /> : null}
                   {loading ? 'Sending...' : 'Submit'}

@@ -194,7 +194,7 @@ const Footer: React.FC = () => {
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 className="px-6 py-2 flex justify-center items-center bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed"
-                disabled={loading || !isSupabaseConnected}
+                disabled={loading}
               >
                 {loading ? <Loader2 className="animate-spin mr-2" /> : null}
                 {loading ? 'Subscribing...' : 'Subscribe'}
